@@ -1,4 +1,5 @@
-"""Reusable layers and utility modules shared across architectures, such as convolutions, norm layers, and residual/attention blocks. Prominent classes include: Channel_Shuffle, SP, Pixel_Down_Shuffle, DWT, IWT, MeanShift. Notable functions include: default_conv, default_conv1, channel_shuffle, pixel_down_shuffle, sp_init, dwt_init."""
+"""Reusable layers and utility modules shared across architectures, such as convolutions, normalization, and residual/attention blocks. Prominent classes: Channel_Shuffle, SP, Pixel_Down_Shuffle, DWT, IWT, MeanShift. Representative functions: default_conv, default_conv1, channel_shuffle, pixel_down_shuffle, sp_init, dwt_init."""
+
 import math
 
 import torch
@@ -105,7 +106,7 @@ class Channel_Shuffle(nn.Module):
         self.conv_groups = conv_groups
         self.requires_grad = False
 
-    # Purpose: Compute the core transformation of this component (residual/UNet stage) and return the output tensor.
+    # Purpose: Compute the core transformation of this module and return the output tensor.
     def forward(self, x):
         return channel_shuffle(x, self.conv_groups)
 

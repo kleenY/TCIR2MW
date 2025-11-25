@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*
-"""Feature/Channel attention mechanisms that recalibrate intermediate representations to improve discriminative capacity. Prominent classes include: FcaBottleneck, FcaBasicBlock, MultiSpectralAttentionLayer, MultiSpectralDCTLayer. Notable functions include: conv3x3, get_freq_indices."""
 # @Time : 2023/8/27 16:53
-# @Author : 杨坤林
+# @Author : Kunlin Yang
 # @File : my_fca_attention.py
 # @Software : PyCharm
+
+"""Feature/Channel attention mechanisms that recalibrate intermediate representations to improve discriminative capacity. Prominent classes: FcaBottleneck, FcaBasicBlock, MultiSpectralAttentionLayer, MultiSpectralDCTLayer. Representative functions: conv3x3, get_freq_indices."""
 
 import torch.nn as nn
 import math
@@ -39,7 +40,7 @@ class FcaBottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
 
-    # Purpose: Reweight feature channels via learned attention to enhance informative responses.
+    # Purpose: Compute the core transformation of this module and return the output tensor.
     def forward(self, x):
         residual = x
 

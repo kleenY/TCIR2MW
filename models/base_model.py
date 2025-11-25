@@ -1,4 +1,5 @@
-"""Base training and inference scaffold. Standardizes data I/O, network construction, optimization steps, checkpointing, and learning‑rate scheduling. Prominent classes include: BaseModel."""
+"""Base training and inference scaffold. Standardizes data I/O, network construction, optimization steps, checkpointing, and learning‑rate scheduling. Prominent classes: BaseModel."""
+
 import os
 import torch
 
@@ -17,7 +18,7 @@ class BaseModel():
     def set_input(self, input):
         self.input = input
 
-    # Purpose: Compute the forward pass of the component and return the output tensor.
+    # Purpose: Compute the core transformation of this module and return the output tensor.
     def forward(self):
         pass
 

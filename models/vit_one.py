@@ -1,4 +1,5 @@
-"""Vision Transformer variant used in this repository. Implements patch embedding, positional encodings, Transformer encoder, and output heads. Prominent classes include: ViT_model."""
+"""Vision Transformer variant used in this repository. Implements patch embedding, positional encodings, Transformer encoder, and output heads. Prominent classes: ViT_model."""
+
 import torch
 from collections import OrderedDict
 from torch.autograd import Variable
@@ -65,7 +66,7 @@ class ViT_model(BaseModel):
         self.input_B = truth
 
 
-    # Purpose: Embed the image into patch tokens, add positional encodings, process with Transformer encoder, and project to outputs.
+    # Purpose: Embed image patches, add positional encodings, apply Transformer encoder, and project to outputs.
     def forward(self):
         self.real_A = Variable(self.input_A)
         self.fake_B= self.netG(self.real_A)

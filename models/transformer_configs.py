@@ -1,4 +1,5 @@
-"""Configuration factories for ViT/Transformer variants, including patch sizes, depths, and paths to pretrained checkpoints. Notable functions include: get_b16_config, get_vit_b16_config, get_l16_config, get_vit_l16_config."""
+"""Configuration factories for ViT/Transformer variants, including patch sizes, depths, and paths to pretrained checkpoints. Representative functions: get_b16_config, get_vit_b16_config, get_l16_config, get_vit_l16_config."""
+
 import ml_collections
 
 def get_b16_config():
@@ -21,7 +22,7 @@ def get_b16_config():
     return config
 
 
-# Purpose: Return a ViT configuration object with patch size, depth, and checkpoint path presets.
+# Purpose: Return a ViT configuration with patch size, depth, and checkpoint path presets.
 def get_vit_b16_config():
     """Returns the residual ViT-B/16 configuration."""
     config = get_b16_config()

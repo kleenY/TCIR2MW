@@ -1,4 +1,5 @@
-"""Neural network primitives and model factories. Implements generators/discriminators (ResNet/UNet families), residual blocks, normalization layers, and utilities for weight init and schedulers. Prominent classes include: GANLoss, Encoder_Decoder, ResnetGenerator, ResnetBlock, UnetGenerator, UnetSkipConnectionBlock. Notable functions include: weights_init_normal, weights_init_xavier, weights_init_kaiming, weights_init_orthogonal, init_weights, get_norm_layer."""
+"""Neural network primitives and model factories. Implements generators/discriminators (ResNet/UNet families), residual blocks, normalization layers, and utilities for weight initialization and schedulers. Prominent classes: GANLoss, Encoder_Decoder, ResnetGenerator, ResnetBlock, UnetGenerator, UnetSkipConnectionBlock. Representative functions: weights_init_normal, weights_init_xavier, weights_init_kaiming, weights_init_orthogonal, init_weights, get_norm_layer."""
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -274,7 +275,7 @@ class Encoder_Decoder(nn.Module):
 
             
             
-    # Purpose: Compute the core transformation of this component (residual/UNet stage) and return the output tensor.
+    # Purpose: Compute the core transformation of this module and return the output tensor.
     def forward(self, input):
         #if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor):
         encoded=[]

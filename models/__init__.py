@@ -1,5 +1,6 @@
-"""Model construction entry points and registration utilities, exposing creation by name. Notable functions include: create_model."""
-# Purpose: Factory: create and configure a model instance by name.
+"""Model construction entry points and registration utilities, exposing creation by name. Representative functions: create_model."""
+
+# Purpose: Instantiate and configure a model instance by name.
 def create_model(opt):
     model = None
     print(opt.model)

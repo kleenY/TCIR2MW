@@ -1,5 +1,6 @@
 # coding=utf-8
-"""Residual Transformer components for vision. Includes multi‑head self‑attention, feed‑forward sublayers, and residual pre/post‑normalization blocks. Prominent classes include: Attention, Mlp, Embeddings, Block, Encoder, Transformer. Notable functions include: np2th."""
+"""Residual Transformer components for vision. Includes multi‑head self‑attention, feed‑forward sublayers, and residual pre/post‑normalization blocks. Prominent classes: Attention, Mlp, Embeddings, Block, Encoder, Transformer. Representative functions: np2th."""
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -64,7 +65,7 @@ class Attention(nn.Module):
         x = x.view(*new_x_shape)
         return x.permute(0, 2, 1, 3)
 
-    # Purpose: Apply multi‑head self‑attention and feed‑forward sublayers with residual connections and normalization.
+    # Purpose: Apply multi‑head self‑attention and feed‑forward blocks with residual connections and normalization.
     def forward(self, hidden_states):
         mixed_query_layer = self.query(hidden_states)
         mixed_key_layer = self.key(hidden_states)
