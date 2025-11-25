@@ -1,12 +1,18 @@
+"""Model factory and registration utilities.
+
+This module is part of the TCIR2MW project.
+Auto-generated overview (2025-11-25).
+
+Key classes:
+    None
+
+Key functions:
+    create_model
+
+Notes:
+    This module-level docstring was auto-generated. Please refine or expand as needed.
+"""
 def create_model(opt):
-    """Perform the create_model operation.
-
-    Args:
-        opt (Any): Description.
-
-    Returns:
-        Any: Result.
-    """
     model = None
     print(opt.model)
     if opt.model == 'vit_one':

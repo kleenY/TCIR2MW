@@ -1,4 +1,18 @@
 # coding=utf-8
+"""Residual Transformer layers and attention-based modules used by the models.
+
+This module is part of the TCIR2MW project.
+Auto-generated overview (2025-11-25).
+
+Key classes:
+    Attention, Mlp, Embeddings, Block, Encoder, Transformer, ResnetBlock, ART_block, ViT, Res_CNN
+
+Key functions:
+    np2th
+
+Notes:
+    This module-level docstring was auto-generated. Please refine or expand as needed.
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -22,6 +36,7 @@ from models.my_fca_attention import MultiSpectralAttentionLayer
 
 logger = logging.getLogger(__name__)
 
+
 ATTENTION_Q = "MultiHeadDotProductAttention_1/query"
 ATTENTION_K = "MultiHeadDotProductAttention_1/key"
 ATTENTION_V = "MultiHeadDotProductAttention_1/value"
@@ -31,28 +46,16 @@ FC_1 = "MlpBlock_3/Dense_1"
 ATTENTION_NORM = "LayerNorm_0"
 MLP_NORM = "LayerNorm_2"
 
+
 def np2th(weights, conv=False):
     """Possibly convert HWIO to OIHW."""
     if conv:
         weights = weights.transpose([3, 2, 0, 1])
     return torch.from_numpy(weights)
 
+
 class Attention(nn.Module):
-    """Class Attention.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, config, vis):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            vis (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Attention, self).__init__()
         self.vis = vis
         self.num_attention_heads = config.transformer["num_heads"]
@@ -70,27 +73,11 @@ class Attention(nn.Module):
         self.softmax = Softmax(dim=-1)
 
     def transpose_for_scores(self, x):
-        """Perform the transpose_for_scores operation.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Any: Result.
-        """
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(*new_x_shape)
         return x.permute(0, 2, 1, 3)
 
     def forward(self, hidden_states):
-        """Run the forward pass of the network.
-
-        Args:
-            hidden_states (Any): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         mixed_query_layer = self.query(hidden_states)
         mixed_key_layer = self.key(hidden_states)
         mixed_value_layer = self.value(hidden_states)
@@ -113,21 +100,9 @@ class Attention(nn.Module):
         attention_output = self.proj_dropout(attention_output)
         return attention_output, weights
 
+
 class Mlp(nn.Module):
-    """Class Mlp.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, config):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Mlp, self).__init__()
         self.fc1 = Linear(config.hidden_size, config.transformer["mlp_dim"])
         self.fc2 = Linear(config.transformer["mlp_dim"], config.hidden_size)
@@ -137,28 +112,12 @@ class Mlp(nn.Module):
         self._init_weights()
 
     def _init_weights(self):
-        """Perform the _init_weights operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         nn.init.xavier_uniform_(self.fc1.weight)
         nn.init.xavier_uniform_(self.fc2.weight)
         nn.init.normal_(self.fc1.bias, std=1e-6)
         nn.init.normal_(self.fc2.bias, std=1e-6)
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         x = self.fc1(x)
         x = self.act_fn(x)
         x = self.dropout(x)
@@ -166,22 +125,11 @@ class Mlp(nn.Module):
         x = self.dropout(x)
         return x
 
+
 class Embeddings(nn.Module):
     """Construct the embeddings from patch, position embeddings.
     """
     def __init__(self, config, img_size, in_channels=3,input_dim=3,old = 1):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            img_size (Tensor): Description.
-            in_channels (Any): Description.
-            input_dim (Tensor): Description.
-            old (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Embeddings, self).__init__()
         self.config = config
         img_size = _pair(img_size)
@@ -199,15 +147,8 @@ class Embeddings(nn.Module):
         self.positional_encoding = nn.Parameter(torch.zeros(1, n_patches, config.hidden_size))
         self.dropout = Dropout(config.transformer["dropout_rate"])
 
+
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         x = self.patch_embeddings(x)
         x = x.flatten(2)
         x = x.transpose(-1, -2)
@@ -216,21 +157,7 @@ class Embeddings(nn.Module):
         return embeddings
 
 class Block(nn.Module):
-    """Class Block.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, config, vis):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            vis (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Block, self).__init__()
         self.hidden_size = config.hidden_size
         self.attention_norm = LayerNorm(config.hidden_size, eps=1e-6)
@@ -239,14 +166,6 @@ class Block(nn.Module):
         self.attn = Attention(config, vis)
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         h = x
         x = self.attention_norm(x)
         x, weights = self.attn(x)
@@ -259,15 +178,6 @@ class Block(nn.Module):
         return x, weights
 
     def load_from(self, weights, n_block):
-        """Perform the load_from operation.
-
-        Args:
-            weights (Any): Description.
-            n_block (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         ROOT = f"Transformer/encoderblock_{n_block}"
         with torch.no_grad():
             query_weight = np2th(weights[pjoin(ROOT, ATTENTION_Q, "kernel")]).view(self.hidden_size, self.hidden_size).t()
@@ -304,22 +214,9 @@ class Block(nn.Module):
             self.ffn_norm.weight.copy_(np2th(weights[pjoin(ROOT, MLP_NORM, "scale")]))
             self.ffn_norm.bias.copy_(np2th(weights[pjoin(ROOT, MLP_NORM, "bias")]))
 
+
 class Encoder(nn.Module):
-    """Class Encoder.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, config, vis):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            vis (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Encoder, self).__init__()
         self.vis = vis
         self.layer = nn.ModuleList()
@@ -329,14 +226,6 @@ class Encoder(nn.Module):
             self.layer.append(copy.deepcopy(layer))
 
     def forward(self, hidden_states):
-        """Run the forward pass of the network.
-
-        Args:
-            hidden_states (Any): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         attn_weights = []
         for layer_block in self.layer:
             hidden_states, weights = layer_block(hidden_states)
@@ -345,79 +234,25 @@ class Encoder(nn.Module):
         encoded = self.encoder_norm(hidden_states)
         return encoded, attn_weights
 
+
 class Transformer(nn.Module):
-    """Class Transformer.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self,config, img_size, vis,in_channels=3,old = 1):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            img_size (Tensor): Description.
-            vis (Any): Description.
-            in_channels (Any): Description.
-            old (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Transformer, self).__init__()
         self.embeddings = Embeddings(config,img_size=img_size,input_dim=in_channels,old = old)
         self.encoder = Encoder(config, vis)
 
     def forward(self, input_ids):
-        """Run the forward pass of the network.
-
-        Args:
-            input_ids (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         embedding_output, features = self.embeddings(input_ids)
         encoded, attn_weights = self.encoder(embedding_output)  # (B, n_patch, hidden)
         return encoded, features
 
 # Define a resnet block
 class ResnetBlock(nn.Module):
-    """Class ResnetBlock.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias,dim2=None):
-        """Initialize the instance.
-
-        Args:
-            dim (Any): Description.
-            padding_type (Any): Description.
-            norm_layer (Any): Description.
-            use_dropout (Any): Description.
-            use_bias (Any): Description.
-            dim2 (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(ResnetBlock, self).__init__()
         self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
 
     def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
-        """Perform the build_conv_block operation.
-
-        Args:
-            dim (Any): Description.
-            padding_type (Any): Description.
-            norm_layer (Any): Description.
-            use_dropout (Any): Description.
-            use_bias (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         conv_block = []
         p = 0
         #use_dropout= use_dropo
@@ -447,38 +282,15 @@ class ResnetBlock(nn.Module):
         conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
                        norm_layer(dim)]
 
+        
         return nn.Sequential(*conv_block)
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         out = x + self.conv_block(x)
         return out
 
 class ART_block(nn.Module):
-    """Class ART_block.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self,config, input_dim, img_size=224,transformer = None):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            input_dim (Tensor): Description.
-            img_size (Tensor): Description.
-            transformer (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(ART_block, self).__init__()
         self.transformer = transformer
         self.config = config
@@ -522,14 +334,6 @@ class ART_block(nn.Module):
         setattr(self, 'residual_cnn', nn.Sequential(*model))
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         if self.transformer:
             # downsample
             down_sampled = self.downsample(x)
@@ -555,24 +359,7 @@ class ART_block(nn.Module):
 
 ########Generator############
 class ViT(nn.Module):
-    """Class ViT.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self,config, input_dim, img_size=224, output_dim=3, vis=False):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            input_dim (Tensor): Description.
-            img_size (Tensor): Description.
-            output_dim (Any): Description.
-            vis (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(ViT, self).__init__()
         self.transformer_encoder = Encoder(config, vis)
         self.config = config
@@ -658,23 +445,18 @@ class ViT(nn.Module):
 
     ############################################################################################
 
+
         # fca_attention
         self.att_1 = MultiSpectralAttentionLayer(256, 75, 75)
         self.att_2 = MultiSpectralAttentionLayer(256, 75, 75)
 
+        
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
 
         x = self.encoder_1(x)
         x = self.encoder_2(x)
         x = self.encoder_3(x)
+
 
         #Information Bottleneck
         x_1 = self.att_1(x)
@@ -695,15 +477,8 @@ class ViT(nn.Module):
         x = self.decoder_3(x)
         return x
 
+
     def load_from(self, weights):
-        """Perform the load_from operation.
-
-        Args:
-            weights (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         with torch.no_grad():
 
             res_weight = weights
@@ -766,25 +541,9 @@ class ViT(nn.Module):
                 for uname, unit in block.named_children():
                     unit.load_from(weights, n_block=uname)
 
+
 class Res_CNN(nn.Module):
-    """Class Res_CNN.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, config, input_dim, img_size=224, output_dim=3, vis=False):
-        """Initialize the instance.
-
-        Args:
-            config (Any): Description.
-            input_dim (Tensor): Description.
-            img_size (Tensor): Description.
-            output_dim (Any): Description.
-            vis (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         super(Res_CNN, self).__init__()
         self.config = config
         output_nc = output_dim
@@ -870,14 +629,6 @@ class Res_CNN(nn.Module):
     ############################################################################################
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         # Encoder
         x = self.encoder_1(x)
         x = self.encoder_2(x)
@@ -898,12 +649,10 @@ class Res_CNN(nn.Module):
         x = self.decoder_3(x)
         return x
 
-class channel_compression(nn.Module):
-    """Class channel_compression.
 
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
+
+
+class channel_compression(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1):
         """
         Args:
@@ -930,14 +679,6 @@ class channel_compression(nn.Module):
             nn.BatchNorm2d(out_channels))
 
     def forward(self, x):
-        """Run the forward pass of the network.
-
-        Args:
-            x (Tensor): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         out = self.block(x)
         out += (x if self.skip is None else self.skip(x))
         out = F.relu(out)
@@ -948,3 +689,4 @@ CONFIGS = {
     'Res-ViT-B_16': configs.get_vit_b16_config(),
     'Res-ViT-L_16': configs.get_vit_l16_config(),
 }
+

@@ -1,3 +1,17 @@
+"""Vision Transformer model implementation used in this project.
+
+This module is part of the TCIR2MW project.
+Auto-generated overview (2025-11-25).
+
+Key classes:
+    ViT_model
+
+Key functions:
+    None
+
+Notes:
+    This module-level docstring was auto-generated. Please refine or expand as needed.
+"""
 import torch
 from collections import OrderedDict
 from torch.autograd import Variable
@@ -7,32 +21,12 @@ from .base_model import BaseModel
 from . import networks
 from . import PhaseLoss
 
+
 class ViT_model(BaseModel):
-    """Class ViT_model.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def name(self):
-        """Perform the name operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         return 'ViT_model'
 
     def initialize(self, opt):
-        """Initialize model networks and optimizers.
-
-        Args:
-            opt (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         BaseModel.initialize(self, opt)
         self.isTrain = opt.isTrain
 
@@ -40,6 +34,7 @@ class ViT_model(BaseModel):
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
                                       opt.which_model_netG,opt.vit_name,opt.fineSize,opt.pre_trained_path, opt.norm, not opt.no_dropout, opt.init_type, self.gpu_ids,
                                       pre_trained_trans=opt.pre_trained_transformer,pre_trained_resnet = opt.pre_trained_resnet)
+
 
         if self.isTrain:
             self.lambda_f = opt.lambda_f
@@ -78,42 +73,18 @@ class ViT_model(BaseModel):
         print('-----------------------------------------------')
 
     def set_input(self, input, truth):
-        """Set input data for the current iteration.
-
-        Args:
-            input (Tensor): Description.
-            truth (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
 
         self.input_A = input
         self.input_B = truth
 
+
     def forward(self):
-        """Run the forward pass of the network.
-
-        Args:
-            None
-
-        Returns:
-            Tensor: Result.
-        """
         self.real_A = Variable(self.input_A)
         self.fake_B= self.netG(self.real_A)
         self.real_B = Variable(self.input_B)
 
     # no backprop gradients
     def test(self):
-        """Run inference (evaluation mode).
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         with torch.no_grad():
             self.real_A = Variable(self.input_A)
             self.fake_B = self.netG(self.real_A)
@@ -121,25 +92,9 @@ class ViT_model(BaseModel):
 
     # get image paths
     def get_image_paths(self):
-        """Return paths to the current images.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         return self.image_paths
 
     def backward_D(self):
-        """Perform the backward_D operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         # Fake
         # stop backprop to the generator by detaching fake_B
         fake_AB = self.fake_AB_pool.query(torch.cat((self.real_A, self.fake_B), 1).data)
@@ -156,15 +111,8 @@ class ViT_model(BaseModel):
 
         self.loss_D.backward()
 
+        
     def backward_G(self):
-        """Perform the backward_G operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         # First, G(A) should fake the discriminator
         fake_AB = torch.cat((self.real_A, self.fake_B), 1)
         pred_fake = self.netD(fake_AB)
@@ -173,18 +121,10 @@ class ViT_model(BaseModel):
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_A
         self.phase_loss = self.phase_loss_fn(self.fake_B, self.real_B) * self.opt.lambda_P
         self.loss_G = self.loss_G_GAN + self.loss_G_L1*1 + self.phase_loss
-
+        
         self.loss_G.backward()
 
     def optimize_parameters(self):
-        """Perform the optimize_parameters operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         self.forward()
 
         self.optimizer_D.zero_grad()
@@ -196,14 +136,6 @@ class ViT_model(BaseModel):
         self.optimizer_G.step()
 
     def get_current_errors(self):
-        """Perform the get_current_errors operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         return OrderedDict([('G_GAN', self.loss_G_GAN.item()),
                             ('G_L1', self.loss_G_L1.item()),
                             ('D_real', self.loss_D_real.item()),
@@ -212,26 +144,10 @@ class ViT_model(BaseModel):
                             ])
 
     def get_current_visuals(self):
-        """Perform the get_current_visuals operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         # fake_B = util.tensor2im(self.fake_B.data)
         fake_B = self.fake_B.data
         return OrderedDict([('fake_B', fake_B)])
 
     def save(self, label):
-        """Perform the save operation.
-
-        Args:
-            label (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         self.save_network(self.netG, 'G', label, self.gpu_ids)
         # self.savenetwork(self.netD, 'D', label, self.gpu_ids)

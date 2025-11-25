@@ -1,4 +1,18 @@
 # -*- coding: utf-8 -*
+"""Custom phase-based loss function for training and evaluation.
+
+This module is part of the TCIR2MW project.
+Auto-generated overview (2025-11-25).
+
+Key classes:
+    PhaseLoss
+
+Key functions:
+    None
+
+Notes:
+    This module-level docstring was auto-generated. Please refine or expand as needed.
+"""
 # @Time : 2023/9/4 10:45
 # Author: Kunlin Yang
 # @File : PhaseLoss.py
@@ -6,34 +20,13 @@
 import torch
 import torch.nn as nn
 
+
 # phase loss
 class PhaseLoss(nn.Module):
-    """Class PhaseLoss.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self):
-        """Initialize the instance.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         super(PhaseLoss, self).__init__()
 
     def forward(self, predicted, target):
-        """Run the forward pass of the network.
-
-        Args:
-            predicted (Any): Description.
-            target (Any): Description.
-
-        Returns:
-            Tensor: Result.
-        """
         # Compute the Fourier transform
         predicted_fft = torch.fft.fft2(predicted, dim=(-2, -1))
         target_fft = torch.fft.fft2(target, dim=(-2, -1))
@@ -50,6 +43,7 @@ class PhaseLoss(nn.Module):
         phase_loss = torch.mean(torch.abs(predicted_phase - target_phase))
 
         return phase_loss
+
 
 # Comment translated to English (manual check recommended)
 # if __name__ == '__main__':
