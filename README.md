@@ -43,7 +43,7 @@ Comparison of experimental results
 
 ### How to use
 
-1. [Click to download our with Pre-training model model and test set data;](https://drive.google.com/drive/folders/1zWU75XcW2isYdNvAlZV0vTSCxD0Q9M__?usp=drive_link)
+1. [Click to download our with Pre-training model model and test set data(To control traffic and prevent malicious attacks, an application is required.);](https://drive.google.com/drive/folders/1zWU75XcW2isYdNvAlZV0vTSCxD0Q9M__?usp=drive_link)
 2. The pre-training model is in the checkpoints/inf2mw folder and the test set can be in any folder;
 3. Use the my_vit_test.py file for testing, and pay attention to the path setting of the test set file;
 4. The result of the run is saved in the test folder of the current file (it will be created by itself, and the result is in numpy file format);
