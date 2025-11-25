@@ -47,7 +47,8 @@ Comparison of experimental results
 2. The pre-training model is in the checkpoints/inf2mw folder and the test set can be in any folder;
 3. Use the my_vit_test.py file for testing, and pay attention to the path setting of the test set file;
 4. The result of the run is saved in the test folder of the current file (it will be created by itself, and the result is in numpy file format);
-5. Use the numpy_to_image.py file in the utils folder to convert the test results to image files.
+5. Use the numpy_to_image.py file in the utils folder to convert the test results to image files;
+6. [Our complete dataset is accessible here.](https://drive.google.com/file/d/1GFv7YVhMunuyBcILzp141n8XOoS-ST1J/view?usp=drive_link)
 
 ### Citations
 
