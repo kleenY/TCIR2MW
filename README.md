@@ -37,9 +37,9 @@ Microwave images with high spatiotemporal resolution are essential for observing
 
 Comparison of experimental results
 
-![comparetion](.\Table.png)
+![comparetion](./Table.png)
 
-![comparetion2](.\compare.png)
+![comparetion2](./compare.png)
 
 ### How to use
 
