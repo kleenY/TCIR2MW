@@ -1,8 +1,20 @@
 from .base_options import BaseOptions
 
-
 class TestOptions(BaseOptions):
+    """Class TestOptions.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def initialize(self):
+        """Initialize model networks and optimizers.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         BaseOptions.initialize(self)
         self.parser.add_argument('--ntest', type=int, default=float("inf"), help='# of test examples.')
         self.parser.add_argument('--results_dir', type=str, default='./results/', help='saves results here.')
