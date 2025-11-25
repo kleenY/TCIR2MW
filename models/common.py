@@ -7,12 +7,35 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 def default_conv(in_channels, out_channels, kernel_size, bias=True, dilation=1):
+    """Perform the default_conv operation.
+
+    Args:
+        in_channels (Any): Description.
+        out_channels (Any): Description.
+        kernel_size (Any): Description.
+        bias (Any): Description.
+        dilation (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     return nn.Conv2d(
         in_channels, out_channels, kernel_size,
         padding=(kernel_size//2)+dilation-1, bias=bias, dilation=dilation)
 
-
 def default_conv1(in_channels, out_channels, kernel_size, bias=True, groups=3):
+    """Perform the default_conv1 operation.
+
+    Args:
+        in_channels (Any): Description.
+        out_channels (Any): Description.
+        kernel_size (Any): Description.
+        bias (Any): Description.
+        groups (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     return nn.Conv2d(
         in_channels,out_channels, kernel_size,
         padding=(kernel_size//2), bias=bias, groups=groups)
@@ -20,6 +43,15 @@ def default_conv1(in_channels, out_channels, kernel_size, bias=True, groups=3):
 #def shuffle_channel()
 
 def channel_shuffle(x, groups):
+    """Perform the channel_shuffle operation.
+
+    Args:
+        x (Tensor): Description.
+        groups (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     batchsize, num_channels, height, width = x.size()
 
     channels_per_group = num_channels // groups
@@ -36,6 +68,15 @@ def channel_shuffle(x, groups):
     return x
 
 def pixel_down_shuffle(x, downsacale_factor):
+    """Perform the pixel_down_shuffle operation.
+
+    Args:
+        x (Tensor): Description.
+        downsacale_factor (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     batchsize, num_channels, height, width = x.size()
 
     out_height = height // downsacale_factor
@@ -48,9 +89,15 @@ def pixel_down_shuffle(x, downsacale_factor):
 
     return unshuffle_out.view(batchsize, num_channels, out_height, out_width)
 
-
-
 def sp_init(x):
+    """Perform the sp_init operation.
+
+    Args:
+        x (Tensor): Description.
+
+    Returns:
+        Any: Result.
+    """
 
     x01 = x[:, :, 0::2, :]
     x02 = x[:, :, 1::2, :]
@@ -59,10 +106,17 @@ def sp_init(x):
     x_LH = x01[:, :, :, 1::2]
     x_HH = x02[:, :, :, 1::2]
 
-
     return torch.cat((x_LL, x_HL, x_LH, x_HH), 1)
 
 def dwt_init(x):
+    """Perform the dwt_init operation.
+
+    Args:
+        x (Tensor): Description.
+
+    Returns:
+        Any: Result.
+    """
 
     x01 = x[:, :, 0::2, :] / 2
     x02 = x[:, :, 1::2, :] / 2
@@ -78,6 +132,14 @@ def dwt_init(x):
     return torch.cat((x_LL, x_HL, x_LH, x_HH), 1)
 
 def iwt_init(x):
+    """Perform the iwt_init operation.
+
+    Args:
+        x (Tensor): Description.
+
+    Returns:
+        Any: Result.
+    """
     r = 2
     in_batch, in_channel, in_height, in_width = x.size()
     #print([in_batch, in_channel, in_height, in_width])
@@ -87,7 +149,6 @@ def iwt_init(x):
     x2 = x[:, out_channel:out_channel * 2, :, :] / 2
     x3 = x[:, out_channel * 2:out_channel * 3, :, :] / 2
     x4 = x[:, out_channel * 3:out_channel * 4, :, :] / 2
-    
 
     h = torch.zeros([out_batch, out_channel, out_height, out_width]).float().cuda()
 
@@ -99,49 +160,169 @@ def iwt_init(x):
     return h
 
 class Channel_Shuffle(nn.Module):
+    """Class Channel_Shuffle.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, conv_groups):
+        """Initialize the instance.
+
+        Args:
+            conv_groups (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(Channel_Shuffle, self).__init__()
         self.conv_groups = conv_groups
         self.requires_grad = False
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         return channel_shuffle(x, self.conv_groups)
 
 class SP(nn.Module):
+    """Class SP.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self):
+        """Initialize the instance.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         super(SP, self).__init__()
         self.requires_grad = False
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         return sp_init(x)
 
 class Pixel_Down_Shuffle(nn.Module):
+    """Class Pixel_Down_Shuffle.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self):
+        """Initialize the instance.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         super(Pixel_Down_Shuffle, self).__init__()
         self.requires_grad = False
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         return pixel_down_shuffle(x, 2)
 
 class DWT(nn.Module):
+    """Class DWT.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self):
+        """Initialize the instance.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         super(DWT, self).__init__()
         self.requires_grad = False
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         return dwt_init(x)
 
 class IWT(nn.Module):
+    """Class IWT.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self):
+        """Initialize the instance.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         super(IWT, self).__init__()
         self.requires_grad = False
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         return iwt_init(x)
 
-
 class MeanShift(nn.Conv2d):
+    """Class MeanShift.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, rgb_range, rgb_mean, rgb_std, sign=-1):
+        """Initialize the instance.
+
+        Args:
+            rgb_range (Any): Description.
+            rgb_mean (Any): Description.
+            rgb_std (Any): Description.
+            sign (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(MeanShift, self).__init__(3, 3, kernel_size=1)
         std = torch.Tensor(rgb_std)
         self.weight.data = torch.eye(3).view(3, 3, 1, 1)
@@ -153,7 +334,23 @@ class MeanShift(nn.Conv2d):
             self.create_graph = False
             self.volatile = True
 class MeanShift2(nn.Conv2d):
+    """Class MeanShift2.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, rgb_range, rgb_mean, rgb_std, sign=-1):
+        """Initialize the instance.
+
+        Args:
+            rgb_range (Any): Description.
+            rgb_mean (Any): Description.
+            rgb_std (Any): Description.
+            sign (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(MeanShift2, self).__init__(4, 4, kernel_size=1)
         std = torch.Tensor(rgb_std)
         self.weight.data = torch.eye(4).view(4, 4, 1, 1)
@@ -165,6 +362,11 @@ class MeanShift2(nn.Conv2d):
             self.volatile = True
 
 class BasicBlock(nn.Sequential):
+    """Class BasicBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, in_channels, out_channels, kernel_size, stride=1, bias=False,
         bn=False, act=nn.ReLU(True)):
@@ -178,6 +380,11 @@ class BasicBlock(nn.Sequential):
         super(BasicBlock, self).__init__(*m)
 
 class BBlock(nn.Module):
+    """Class BBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -188,15 +395,27 @@ class BBlock(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x).mul(self.res_scale)
         return x
 
 class DBlock_com(nn.Module):
+    """Class DBlock_com.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -211,15 +430,27 @@ class DBlock_com(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class DBlock_inv(nn.Module):
+    """Class DBlock_inv.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -234,15 +465,27 @@ class DBlock_inv(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class DBlock_com1(nn.Module):
+    """Class DBlock_com1.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -257,15 +500,27 @@ class DBlock_com1(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class DBlock_inv1(nn.Module):
+    """Class DBlock_inv1.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -280,15 +535,27 @@ class DBlock_inv1(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class DBlock_com2(nn.Module):
+    """Class DBlock_com2.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -303,15 +570,27 @@ class DBlock_com2(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class DBlock_inv2(nn.Module):
+    """Class DBlock_inv2.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -326,15 +605,27 @@ class DBlock_inv2(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels, eps=1e-4, momentum=0.95))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x)
         return x
 
 class ShuffleBlock(nn.Module):
+    """Class ShuffleBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1,conv_groups=1):
@@ -346,16 +637,27 @@ class ShuffleBlock(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x).mul(self.res_scale)
         return x
 
-
 class DWBlock(nn.Module):
+    """Class DWBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, conv1, in_channels, out_channels, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -370,15 +672,27 @@ class DWBlock(nn.Module):
         if bn: m.append(nn.BatchNorm2d(out_channels))
         m.append(act)
 
-
         self.body = nn.Sequential(*m)
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x = self.body(x).mul(self.res_scale)
         return x
 
 class ResBlock(nn.Module):
+    """Class ResBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, n_feat, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -394,12 +708,25 @@ class ResBlock(nn.Module):
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         res = self.body(x).mul(self.res_scale)
         res += x
 
         return res
 
 class Block(nn.Module):
+    """Class Block.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(
         self, conv, n_feat, kernel_size,
         bias=True, bn=False, act=nn.ReLU(True), res_scale=1):
@@ -415,13 +742,39 @@ class Block(nn.Module):
         self.res_scale = res_scale
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         res = self.body(x).mul(self.res_scale)
         # res += x
 
         return res
 
 class Upsampler(nn.Sequential):
+    """Class Upsampler.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, conv, scale, n_feat, bn=False, act=False, bias=True):
+        """Initialize the instance.
+
+        Args:
+            conv (Any): Description.
+            scale (Any): Description.
+            n_feat (Any): Description.
+            bn (Any): Description.
+            act (Any): Description.
+            bias (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
 
         m = []
         if (scale & (scale - 1)) == 0:    # Is scale = 2^n?
@@ -439,7 +792,3 @@ class Upsampler(nn.Sequential):
             raise NotImplementedError
 
         super(Upsampler, self).__init__(*m)
-
-
-
-

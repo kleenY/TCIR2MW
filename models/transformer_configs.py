@@ -12,13 +12,11 @@ def get_b16_config():
     config.transformer.attention_dropout_rate = 0.0
     config.transformer.dropout_rate = 0.1
 
-
     config.pretrained_path = './model/vit_checkpoint/imagenet21k/ViT-B_16.npz'
     config.patch_size = 16
 
     config.activation = 'softmax'
     return config
-
 
 def get_vit_b16_config():
     """Returns the residual ViT-B/16 configuration."""
@@ -42,17 +40,14 @@ def get_l16_config():
     config.transformer.attention_dropout_rate = 0.0
     config.transformer.dropout_rate = 0.1
 
-
     config.pretrained_path = './model/vit_checkpoint/imagenet21k/ViT-L_16.npz'
     return config
-
 
 def get_vit_l16_config():
     """Returns the residual ViT-L/16 configuration. customized """
     config = get_l16_config()
     config.patches.grid = (16, 16)
-    
+
     config.name = 'l16'
     config.pretrained_path = './model/vit_checkpoint/imagenet21k/ViT-L_16.npz'
     return config
-

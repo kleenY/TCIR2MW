@@ -1,4 +1,12 @@
 def create_model(opt):
+    """Perform the create_model operation.
+
+    Args:
+        opt (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     model = None
     print(opt.model)
     if opt.model == 'vit_one':

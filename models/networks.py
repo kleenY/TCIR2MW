@@ -10,8 +10,15 @@ from . import residual_transformers
 # Functions
 ###############################################################################
 
-
 def weights_init_normal(m):
+    """Perform the weights_init_normal operation.
+
+    Args:
+        m (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     classname = m.__class__.__name__
     # print(classname)
     if classname.find('Conv') != -1:
@@ -21,9 +28,16 @@ def weights_init_normal(m):
     elif classname.find('BatchNorm2d') != -1:
         init.normal(m.weight.data, 1.0, 0.02)
         init.constant(m.bias.data, 0.0)
-
 
 def weights_init_xavier(m):
+    """Perform the weights_init_xavier operation.
+
+    Args:
+        m (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     classname = m.__class__.__name__
     # print(classname)
     if classname.find('Conv') != -1:
@@ -33,9 +47,16 @@ def weights_init_xavier(m):
     elif classname.find('BatchNorm2d') != -1:
         init.normal(m.weight.data, 1.0, 0.02)
         init.constant(m.bias.data, 0.0)
-
 
 def weights_init_kaiming(m):
+    """Perform the weights_init_kaiming operation.
+
+    Args:
+        m (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     classname = m.__class__.__name__
     # print(classname)
     if classname.find('Conv') != -1:
@@ -46,8 +67,15 @@ def weights_init_kaiming(m):
         init.normal(m.weight.data, 1.0, 0.02)
         init.constant(m.bias.data, 0.0)
 
-
 def weights_init_orthogonal(m):
+    """Perform the weights_init_orthogonal operation.
+
+    Args:
+        m (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     classname = m.__class__.__name__
     print(classname)
     if classname.find('Conv') != -1:
@@ -58,8 +86,16 @@ def weights_init_orthogonal(m):
         init.normal(m.weight.data, 1.0, 0.02)
         init.constant(m.bias.data, 0.0)
 
-
 def init_weights(net, init_type='normal'):
+    """Perform the init_weights operation.
+
+    Args:
+        net (Any): Description.
+        init_type (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     print('initialization method [%s]' % init_type)
     if init_type == 'normal':
         net.apply(weights_init_normal)
@@ -72,8 +108,15 @@ def init_weights(net, init_type='normal'):
     else:
         raise NotImplementedError('initialization method [%s] is not implemented' % init_type)
 
-
 def get_norm_layer(norm_type='instance'):
+    """Perform the get_norm_layer operation.
+
+    Args:
+        norm_type (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     if norm_type == 'batch':
         norm_layer = functools.partial(nn.BatchNorm2d, affine=True)
     elif norm_type == 'instance':
@@ -84,10 +127,26 @@ def get_norm_layer(norm_type='instance'):
         raise NotImplementedError('normalization layer [%s] is not found' % norm_type)
     return norm_layer
 
-
 def get_scheduler(optimizer, opt):
+    """Perform the get_scheduler operation.
+
+    Args:
+        optimizer (Any): Description.
+        opt (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     if opt.lr_policy == 'lambda':
         def lambda_rule(epoch):
+            """Perform the lambda_rule operation.
+
+            Args:
+                epoch (int): Description.
+
+            Returns:
+                Any: Result.
+            """
             lr_l = 1.0 - max(0, epoch + 1 + opt.epoch_count - opt.niter) / float(opt.niter_decay + 1)
             return lr_l
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
@@ -99,8 +158,27 @@ def get_scheduler(optimizer, opt):
         return NotImplementedError('learning rate policy [%s] is not implemented', opt.lr_policy)
     return scheduler
 
-
 def define_G(input_nc, output_nc, ngf, which_model_netG,vit_name,img_size,pre_trained_path, norm='batch', use_dropout=False, init_type='normal', gpu_ids=[],pre_trained_trans=True,pre_trained_resnet=0):
+    """Perform the define_G operation.
+
+    Args:
+        input_nc (Tensor): Description.
+        output_nc (Any): Description.
+        ngf (Any): Description.
+        which_model_netG (str): Description.
+        vit_name (str): Description.
+        img_size (Tensor): Description.
+        pre_trained_path (str): Description.
+        norm (Any): Description.
+        use_dropout (Any): Description.
+        init_type (Any): Description.
+        gpu_ids (Any): Description.
+        pre_trained_trans (Any): Description.
+        pre_trained_resnet (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     netG = None
     use_gpu = len(gpu_ids) > 0
     norm_layer = get_norm_layer(norm_type=norm)
@@ -148,7 +226,6 @@ def define_G(input_nc, output_nc, ngf, which_model_netG,vit_name,img_size,pre_tr
         netG.cuda(gpu_ids[0])
     return netG
 
-
 def define_D(input_nc, ndf, which_model_netD,vit_name,img_size,
              n_layers_D=3, norm='batch', use_sigmoid=False, init_type='normal', gpu_ids=[]):
     netD = None
@@ -171,25 +248,35 @@ def define_D(input_nc, ndf, which_model_netD,vit_name,img_size,
     init_weights(netD, init_type=init_type)
     return netD
 
-
 def print_network(net):
+    """Perform the print_network operation.
+
+    Args:
+        net (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     num_params = 0
     for param in net.parameters():
         num_params += param.numel()
     print(net)
     print('Total number of parameters: %d' % num_params)
 
-
 ##############################################################################
 # Classes
 ##############################################################################
-
 
 # Defines the GAN loss which uses either LSGAN or the regular GAN.
 # When LSGAN is used, it is basically same as MSELoss,
 # but it abstracts away the need to create the target label tensor
 # that has the same size as the input
 class GANLoss(nn.Module):
+    """Class GANLoss.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, use_lsgan=True, target_real_label=1.0, target_fake_label=0.0,
                  tensor=torch.FloatTensor):
         super(GANLoss, self).__init__()
@@ -204,6 +291,15 @@ class GANLoss(nn.Module):
             self.loss = nn.BCELoss()
 
     def get_target_tensor(self, input, target_is_real):
+        """Perform the get_target_tensor operation.
+
+        Args:
+            input (Tensor): Description.
+            target_is_real (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         target_tensor = None
         if target_is_real:
             create_label = ((self.real_label_var is None) or
@@ -222,18 +318,44 @@ class GANLoss(nn.Module):
         return target_tensor
 
     def __call__(self, input, target_is_real):
+        """Perform the __call__ operation.
+
+        Args:
+            input (Tensor): Description.
+            target_is_real (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         target_tensor = self.get_target_tensor(input, target_is_real)
         return self.loss(input, target_tensor)
 
-
-
-
-
-
 class Encoder_Decoder(nn.Module):
+    """Class Encoder_Decoder.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, gpu_ids=[], padding_type='reflect',down_samp=1,gated_fusion=0):
-        super(Encoder_Decoder, self).__init__()        
-        self.output_nc = output_nc      
+        """Initialize the instance.
+
+        Args:
+            input_nc (Tensor): Description.
+            output_nc (Any): Description.
+            ngf (Any): Description.
+            norm_layer (Any): Description.
+            use_dropout (Any): Description.
+            n_blocks (Any): Description.
+            gpu_ids (Any): Description.
+            padding_type (Any): Description.
+            down_samp (Any): Description.
+            gated_fusion (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
+        super(Encoder_Decoder, self).__init__()
+        self.output_nc = output_nc
         self.encoders=2
         latent_size=16
         if type(norm_layer) == functools.partial:
@@ -242,10 +364,10 @@ class Encoder_Decoder(nn.Module):
             use_bias = norm_layer == nn.InstanceNorm2d
         #Encoders
         for ii in range(2):
-            model = [nn.ReflectionPad2d(3), nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0), 
-                     norm_layer(ngf), nn.ReLU(True)]   
-            n_downsampling = 2 
-            
+            model = [nn.ReflectionPad2d(3), nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0),
+                     norm_layer(ngf), nn.ReLU(True)]
+            n_downsampling = 2
+
             ### downsample
             for i in range(n_downsampling):
                 mult = 2**i
@@ -254,26 +376,32 @@ class Encoder_Decoder(nn.Module):
             mult = 2**n_downsampling
             for i in range(n_blocks):
                 model += [ResnetBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
-            #model += [nn.ReflectionPad2d(1)]              
-            model += [nn.Conv2d(ngf * mult, latent_size, kernel_size=3, padding=1), 
-                     norm_layer(latent_size), nn.ReLU(True)]   
+            #model += [nn.ReflectionPad2d(1)]
+            model += [nn.Conv2d(ngf * mult, latent_size, kernel_size=3, padding=1),
+                     norm_layer(latent_size), nn.ReLU(True)]
             setattr(self, 'model_enc_'+str(ii), nn.Sequential(*model))
         #Decoder
-        #model += [nn.ReflectionPad2d(3)] 
-        model = [nn.Conv2d(latent_size*2, 256, kernel_size=3, padding=1), 
-                 norm_layer(256), nn.ReLU(True)]  
-        ### upsample         
+        #model += [nn.ReflectionPad2d(3)]
+        model = [nn.Conv2d(latent_size*2, 256, kernel_size=3, padding=1),
+                 norm_layer(256), nn.ReLU(True)]
+        ### upsample
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
             model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2), kernel_size=3, stride=2, padding=1, output_padding=1,bias=use_bias),
-                       norm_layer(int(ngf * mult / 2)), nn.ReLU(True)]        
+                       norm_layer(int(ngf * mult / 2)), nn.ReLU(True)]
 
         model += [nn.ReflectionPad2d(2), nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0), nn.Tanh()]
         setattr(self, 'model_dec', nn.Sequential(*model))
 
-            
-            
     def forward(self, input):
+        """Run the forward pass of the network.
+
+        Args:
+            input (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         #if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor):
         encoded=[]
         for ii in range(self.encoders):
@@ -283,18 +411,33 @@ class Encoder_Decoder(nn.Module):
 #        else:
 #            return self.model(input)
 
-
-
-
-
-
-
 # Defines the generator that consists of Resnet blocks between a few
 # downsampling/upsampling operations.
 # Code and idea originally from Justin Johnson's architecture.
 # https://github.com/jcjohnson/fast-neural-style/
 class ResnetGenerator(nn.Module):
+    """Class ResnetGenerator.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, gpu_ids=[], padding_type='reflect',down_samp=1):
+        """Initialize the instance.
+
+        Args:
+            input_nc (Tensor): Description.
+            output_nc (Any): Description.
+            ngf (Any): Description.
+            norm_layer (Any): Description.
+            use_dropout (Any): Description.
+            n_blocks (Any): Description.
+            gpu_ids (Any): Description.
+            padding_type (Any): Description.
+            down_samp (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         assert(n_blocks >= 0)
         super(ResnetGenerator, self).__init__()
         self.input_nc = input_nc
@@ -313,7 +456,7 @@ class ResnetGenerator(nn.Module):
                            bias=use_bias),
                  norm_layer(ngf),
                  nn.ReLU(True)]
-        setattr(self, 'model_1', nn.Sequential(*model)) 
+        setattr(self, 'model_1', nn.Sequential(*model))
 ############################################################################################
 #Layer2-Encoder2
         n_downsampling = 2
@@ -415,8 +558,15 @@ class ResnetGenerator(nn.Module):
         setattr(self, 'model_15', nn.Sequential(*model))
 ############################################################################################
 
-
     def forward(self, input):
+        """Run the forward pass of the network.
+
+        Args:
+            input (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         x1 = self.model_1(input)
         x2 = self.model_2(x1)
         x3 = self.model_3(x2)
@@ -433,15 +583,43 @@ class ResnetGenerator(nn.Module):
         x14 = self.model_14(x13)
         x15 = self.model_15(x14)
         return x15
-        
 
 # Define a resnet block
 class ResnetBlock(nn.Module):
+    """Class ResnetBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
+        """Initialize the instance.
+
+        Args:
+            dim (Any): Description.
+            padding_type (Any): Description.
+            norm_layer (Any): Description.
+            use_dropout (Any): Description.
+            use_bias (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(ResnetBlock, self).__init__()
         self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
 
     def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
+        """Perform the build_conv_block operation.
+
+        Args:
+            dim (Any): Description.
+            padding_type (Any): Description.
+            norm_layer (Any): Description.
+            use_dropout (Any): Description.
+            use_bias (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         conv_block = []
         p = 0
         if padding_type == 'reflect':
@@ -474,15 +652,27 @@ class ResnetBlock(nn.Module):
         return nn.Sequential(*conv_block)
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         out = x + self.conv_block(x)
         return out
-
 
 # Defines the Unet generator.
 # |num_downs|: number of downsamplings in UNet. For example,
 # if |num_downs| == 7, image of size 128x128 will become of size 1x1
 # at the bottleneck
 class UnetGenerator(nn.Module):
+    """Class UnetGenerator.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, input_nc, output_nc, num_downs, ngf=64,
                  norm_layer=nn.BatchNorm2d, use_dropout=False, gpu_ids=[]):
         super(UnetGenerator, self).__init__()
@@ -500,16 +690,28 @@ class UnetGenerator(nn.Module):
         self.model = unet_block
 
     def forward(self, input):
+        """Run the forward pass of the network.
+
+        Args:
+            input (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor):
             return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
         else:
             return self.model(input)
 
-
 # Defines the submodule with skip connection.
 # X -------------------identity---------------------- X
 #   |-- downsampling -- |submodule| -- upsampling --|
 class UnetSkipConnectionBlock(nn.Module):
+    """Class UnetSkipConnectionBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, outer_nc, inner_nc, input_nc=None,
                  submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):
         super(UnetSkipConnectionBlock, self).__init__()
@@ -556,15 +758,40 @@ class UnetSkipConnectionBlock(nn.Module):
         self.model = nn.Sequential(*model)
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         if self.outermost:
             return self.model(x)
         else:
             return torch.cat([x, self.model(x)], 1)
 
-
 # Defines the PatchGAN discriminator with the specified arguments.
 class NLayerDiscriminator(nn.Module):
+    """Class NLayerDiscriminator.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False, gpu_ids=[]):
+        """Initialize the instance.
+
+        Args:
+            input_nc (Tensor): Description.
+            ndf (Any): Description.
+            n_layers (Any): Description.
+            norm_layer (Any): Description.
+            use_sigmoid (Any): Description.
+            gpu_ids (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(NLayerDiscriminator, self).__init__()
         self.gpu_ids = gpu_ids
         if type(norm_layer) == functools.partial:
@@ -608,15 +835,39 @@ class NLayerDiscriminator(nn.Module):
         self.model = nn.Sequential(*sequence)
 
     def forward(self, input):
+        """Run the forward pass of the network.
+
+        Args:
+            input (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         if len(self.gpu_ids) and isinstance(input.data, torch.cuda.FloatTensor):
             return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
         else:
             print(self.model(input).size())
             return self.model(input)
 
-
 class PixelDiscriminator(nn.Module):
+    """Class PixelDiscriminator.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, input_nc, ndf=64, norm_layer=nn.BatchNorm2d, use_sigmoid=False, gpu_ids=[]):
+        """Initialize the instance.
+
+        Args:
+            input_nc (Tensor): Description.
+            ndf (Any): Description.
+            norm_layer (Any): Description.
+            use_sigmoid (Any): Description.
+            gpu_ids (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(PixelDiscriminator, self).__init__()
         self.gpu_ids = gpu_ids
         if type(norm_layer) == functools.partial:
@@ -638,6 +889,14 @@ class PixelDiscriminator(nn.Module):
         self.net = nn.Sequential(*self.net)
 
     def forward(self, input):
+        """Run the forward pass of the network.
+
+        Args:
+            input (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         if len(self.gpu_ids) and isinstance(input.data, torch.cuda.FloatTensor):
             return nn.parallel.data_parallel(self.net, input, self.gpu_ids)
         else:

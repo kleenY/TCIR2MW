@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*
 # @Time : 2023/8/27 16:53
-# @Author : 杨坤林
+# Author: Kunlin Yang
 # @File : my_fca_attention.py
 # @Software : PyCharm
 
@@ -8,12 +8,25 @@ import torch.nn as nn
 import math
 import torch
 
-
-
 def conv3x3(in_planes, out_planes, stride=1):
+    """Perform the conv3x3 operation.
+
+    Args:
+        in_planes (Any): Description.
+        out_planes (Any): Description.
+        stride (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
 
 class FcaBottleneck(nn.Module):
+    """Class FcaBottleneck.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
@@ -39,6 +52,14 @@ class FcaBottleneck(nn.Module):
         self.stride = stride
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         residual = x
 
         out = self.conv1(x)
@@ -61,8 +82,12 @@ class FcaBottleneck(nn.Module):
 
         return out
 
-
 class FcaBasicBlock(nn.Module):
+    """Class FcaBasicBlock.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     expansion = 1
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
@@ -84,6 +109,14 @@ class FcaBasicBlock(nn.Module):
         self.stride = stride
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         residual = x
 
         out = self.conv1(x)
@@ -103,14 +136,18 @@ class FcaBasicBlock(nn.Module):
 
         return out
 
-
 ##########
 # MultiSpectralAttentionLayer
 
-
-
-
 def get_freq_indices(method):
+    """Perform the get_freq_indices operation.
+
+    Args:
+        method (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     assert method in ['top1', 'top2', 'top4', 'top8', 'top16', 'top32',
                       'bot1', 'bot2', 'bot4', 'bot8', 'bot16', 'bot32',
                       'low1', 'low2', 'low4', 'low8', 'low16', 'low32']
@@ -140,9 +177,25 @@ def get_freq_indices(method):
         raise NotImplementedError
     return mapper_x, mapper_y
 
-
 class MultiSpectralAttentionLayer(torch.nn.Module):
+    """Class MultiSpectralAttentionLayer.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self, channel, dct_h, dct_w, reduction=16, freq_sel_method='top16'):
+        """Initialize the instance.
+
+        Args:
+            channel (Any): Description.
+            dct_h (Any): Description.
+            dct_w (Any): Description.
+            reduction (Any): Description.
+            freq_sel_method (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(MultiSpectralAttentionLayer, self).__init__()
         self.reduction = reduction
         self.dct_h = dct_h
@@ -164,6 +217,14 @@ class MultiSpectralAttentionLayer(torch.nn.Module):
         )
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         n, c, h, w = x.shape
         x_pooled = x
         if h != self.dct_h or w != self.dct_w:
@@ -176,13 +237,24 @@ class MultiSpectralAttentionLayer(torch.nn.Module):
         y = self.fc(y).view(n, c, 1, 1)
         return x * y.expand_as(x)
 
-
 class MultiSpectralDCTLayer(nn.Module):
     """
     Generate dct filters
     """
 
     def __init__(self, height, width, mapper_x, mapper_y, channel):
+        """Initialize the instance.
+
+        Args:
+            height (Any): Description.
+            width (Any): Description.
+            mapper_x (Tensor): Description.
+            mapper_y (Any): Description.
+            channel (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         super(MultiSpectralDCTLayer, self).__init__()
 
         assert len(mapper_x) == len(mapper_y)
@@ -205,6 +277,14 @@ class MultiSpectralDCTLayer(nn.Module):
         # num_freq, h, w
 
     def forward(self, x):
+        """Run the forward pass of the network.
+
+        Args:
+            x (Tensor): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         assert len(x.shape) == 4, 'x must been 4 dimensions, but got ' + str(len(x.shape))
         # n, c, h, w = x.shape
 
@@ -214,6 +294,16 @@ class MultiSpectralDCTLayer(nn.Module):
         return result
 
     def build_filter(self, pos, freq, POS):
+        """Perform the build_filter operation.
+
+        Args:
+            pos (Any): Description.
+            freq (Any): Description.
+            POS (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         result = math.cos(math.pi * freq * (pos + 0.5) / POS) / math.sqrt(POS)
         if freq == 0:
             return result
@@ -221,6 +311,18 @@ class MultiSpectralDCTLayer(nn.Module):
             return result * math.sqrt(2)
 
     def get_dct_filter(self, tile_size_x, tile_size_y, mapper_x, mapper_y, channel):
+        """Perform the get_dct_filter operation.
+
+        Args:
+            tile_size_x (Tensor): Description.
+            tile_size_y (Any): Description.
+            mapper_x (Tensor): Description.
+            mapper_y (Any): Description.
+            channel (Any): Description.
+
+        Returns:
+            Any: Result.
+        """
         dct_filter = torch.zeros(channel, tile_size_x, tile_size_y)
 
         c_part = channel // len(mapper_x)
@@ -233,5 +335,3 @@ class MultiSpectralDCTLayer(nn.Module):
                         t_y, v_y, tile_size_y)
 
         return dct_filter
-
-

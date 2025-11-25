@@ -1,18 +1,39 @@
 # -*- coding: utf-8 -*
 # @Time : 2023/9/4 10:45
-# @Author : 杨坤林
+# Author: Kunlin Yang
 # @File : PhaseLoss.py
 # @Software : PyCharm
 import torch
 import torch.nn as nn
 
-
-# 定义相位损失函数
+# phase loss
 class PhaseLoss(nn.Module):
+    """Class PhaseLoss.
+
+    Notes:
+        Auto-generated documentation. Please refine as needed.
+    """
     def __init__(self):
+        """Initialize the instance.
+
+        Args:
+            None
+
+        Returns:
+            Any: Result.
+        """
         super(PhaseLoss, self).__init__()
 
     def forward(self, predicted, target):
+        """Run the forward pass of the network.
+
+        Args:
+            predicted (Any): Description.
+            target (Any): Description.
+
+        Returns:
+            Tensor: Result.
+        """
         # Compute the Fourier transform
         predicted_fft = torch.fft.fft2(predicted, dim=(-2, -1))
         target_fft = torch.fft.fft2(target, dim=(-2, -1))
@@ -30,17 +51,16 @@ class PhaseLoss(nn.Module):
 
         return phase_loss
 
-
-# # 示例用法
+# Comment translated to English (manual check recommended)
 # if __name__ == '__main__':
-#     # 创建两个示例特征图（大小相同）
-#     predicted_feature_map = torch.randn(1, 1, 64, 64)  # 示例的预测特征图
-#     target_feature_map = torch.randn(1, 1, 64, 64)  # 示例的目标特征图
+# Comment translated to English (manual check recommended)
+# Comment translated to English (manual check recommended)
+# Comment translated to English (manual check recommended)
 #
-#     # 初始化相位损失函数
+# # phase loss
 #     phase_loss_fn = PhaseLoss()
 #
-#     # 计算相位损失
+# # phase loss
 #     loss = phase_loss_fn(predicted_feature_map, target_feature_map)
 #
-#     print("相位损失:", loss.item())
+# print("phase loss:", loss.item())
