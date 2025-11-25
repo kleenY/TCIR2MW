@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-# @Author : 杨坤林
+# Author: Kunlin Yang
 # @File : my_test.py
 # @Software : PyCharm
 from __future__ import print_function
@@ -21,15 +21,26 @@ from sklearn.metrics import mean_absolute_error
 parser = argparse.ArgumentParser(description='my ir2mw test step')
 
 parser.add_argument('--cuda', action='store_true', default=True, help='use cuda')
-parser.add_argument('--modle_dir', type=str, default="")  # 预训练模型地址
-parser.add_argument('--my_train_logs_path', type=str, default="./my_train_logs")   # 输出日志保存地址
+parser.add_argument('--modle_dir', type=str, default="")  # Path to pretrained weights
+parser.add_argument('--my_train_logs_path', type=str, default="./my_train_logs")   # Directory to save logs
 parser.add_argument('--dataset', type=str,
                     default='G:\\Inf2mw\\data\\val', help='data path')
 parser.add_argument('--my_save_path', type=str,
                     default='./test', help='data path')
 
-# 创建字典
+# Create dictionary
 def build_summary_dict(total_losses, psnr, phase, summary_losses=None):
+    """Perform the build_summary_dict operation.
+
+    Args:
+        total_losses (Any): Description.
+        psnr (Any): Description.
+        phase (Any): Description.
+        summary_losses (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
 
     if summary_losses is None:
         summary_losses = {}
@@ -39,13 +50,31 @@ def build_summary_dict(total_losses, psnr, phase, summary_losses=None):
 
     return summary_losses
 
-# 创建保存路径
+# Create save directory
 def create_exp_dir(exp):
-    if not os.path.isdir(exp):  # 判断是否存在，不存在，创建
+    """Create an experiment directory and copy scripts.
+
+    Args:
+        exp (Tensor): Description.
+
+    Returns:
+        Any: Result.
+    """
+    if not os.path.isdir(exp):  # Create it if it does not exist
         os.makedirs(exp)
 
-# 设置优化器
+# Set up optimizer
 def set_lr(args, epoch, optimizer):
+    """Set the learning rate for all parameter groups.
+
+    Args:
+        args (Any): Description.
+        epoch (int): Description.
+        optimizer (Any): Description.
+
+    Returns:
+        Any: Result.
+    """
     lrDecay = args.lrDecay
     decayType = args.decayType
     if decayType == 'step':
@@ -61,19 +90,23 @@ def set_lr(args, epoch, optimizer):
         param_group['lr'] = lr
     return lr
 
-
-
-# 测试单任务模型
+# Comment translated to English (manual check recommended)
 def test2():
+    """Run testing on the dataset.
+
+    Args:
+        None
+
+    Returns:
+        Any: Result.
+    """
     args = parser.parse_args()
 
     opt = TestOptions().parse()
 
-
-
     create_exp_dir(args.my_train_logs_path)
     create_exp_dir(args.my_save_path)
-    # 设置随机数种子
+    # Comment translated to English (manual check recommended)
     manualSeed = 101
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
@@ -81,13 +114,11 @@ def test2():
 
     device = torch.device("cuda:0" if args.cuda else "cpu")
 
-    # 设置模型
+    # Comment translated to English (manual check recommended)
     model = create_model(opt)
 
-
-    df = pd.DataFrame(columns=['data_name', 'test Loss', 'test psnr'])  # 列名
-    df.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), index=False)  # 路径可以根据需要更改
-
+    df = pd.DataFrame(columns=['data_name', 'test Loss', 'test psnr'])  # Comment translated to English (manual check recommended)
+    df.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), index=False)  # Comment translated to English (manual check recommended)
 
     image_dir = args.dataset
 
@@ -109,11 +140,10 @@ def test2():
         input = input.to(device)
 
         target = np.load(os.path.join(hr_dir, image_name))
-        # 归一化
+        # Normalization
         normal_target = target / 350
         target = torch.from_numpy(np.expand_dims(np.expand_dims(normal_target, 0), 0))
         target = target.to(device)
-
 
         model.set_input(input, target)
         with torch.no_grad():
@@ -152,27 +182,28 @@ def test2():
 
         list = [data_name, psnr1, rmse1, ssim1, mae1]
 
-
         data = pd.DataFrame([list])
 
         data.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), mode='a', header=False,
-                    index=False)  # mode设为a,就可以向csv文件追加数据了
+                    index=False)  # Comment translated to English (manual check recommended)
 
     avg_psnr = np.mean(psnr)
 
     print(avg_psnr)
 
-
 def my_normal(x):
+    """Normalize tensor(s) to a given range.
+
+    Args:
+        x (Tensor): Description.
+
+    Returns:
+        Any: Result.
+    """
     smax = np.max(x)
     smin = np.min(x)
     s = (x - smin)/(smax - smin)
     return s
-
-
-
-
-
 
 if __name__ == '__main__':
     print("start!")
