@@ -29,7 +29,7 @@ Microwave images with high spatiotemporal resolution are essential for observing
 
 ### Network Structure Diagram
 
-![network](.\structure.png)
+![network](./structure.png)
 
 
 
