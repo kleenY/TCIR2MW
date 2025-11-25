@@ -1,18 +1,5 @@
 # coding=utf-8
-"""Residual Transformer layers and attention-based modules used by the models.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    Attention, Mlp, Embeddings, Block, Encoder, Transformer, ResnetBlock, ART_block, ViT, Res_CNN
-
-Key functions:
-    np2th
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Residual Transformer components for vision. Includes multi‑head self‑attention, feed‑forward sublayers, and residual pre/post‑normalization blocks. Prominent classes include: Attention, Mlp, Embeddings, Block, Encoder, Transformer. Notable functions include: np2th."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -77,6 +64,7 @@ class Attention(nn.Module):
         x = x.view(*new_x_shape)
         return x.permute(0, 2, 1, 3)
 
+    # Purpose: Apply multi‑head self‑attention and feed‑forward sublayers with residual connections and normalization.
     def forward(self, hidden_states):
         mixed_query_layer = self.query(hidden_states)
         mixed_key_layer = self.key(hidden_states)
@@ -689,4 +677,3 @@ CONFIGS = {
     'Res-ViT-B_16': configs.get_vit_b16_config(),
     'Res-ViT-L_16': configs.get_vit_l16_config(),
 }
-

@@ -1,17 +1,5 @@
-"""Model factory and registration utilities.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    None
-
-Key functions:
-    create_model
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Model construction entry points and registration utilities, exposing creation by name. Notable functions include: create_model."""
+# Purpose: Factory: create and configure a model instance by name.
 def create_model(opt):
     model = None
     print(opt.model)

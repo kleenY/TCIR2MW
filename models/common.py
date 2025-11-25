@@ -1,17 +1,4 @@
-"""Common layers, utilities, and reusable neural network components.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    Channel_Shuffle, SP, Pixel_Down_Shuffle, DWT, IWT, MeanShift, MeanShift2, BasicBlock, BBlock, DBlock_com
-
-Key functions:
-    default_conv, default_conv1, channel_shuffle, pixel_down_shuffle, sp_init, dwt_init, iwt_init
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Reusable layers and utility modules shared across architectures, such as convolutions, norm layers, and residual/attention blocks. Prominent classes include: Channel_Shuffle, SP, Pixel_Down_Shuffle, DWT, IWT, MeanShift. Notable functions include: default_conv, default_conv1, channel_shuffle, pixel_down_shuffle, sp_init, dwt_init."""
 import math
 
 import torch
@@ -118,6 +105,7 @@ class Channel_Shuffle(nn.Module):
         self.conv_groups = conv_groups
         self.requires_grad = False
 
+    # Purpose: Compute the core transformation of this component (residual/UNet stage) and return the output tensor.
     def forward(self, x):
         return channel_shuffle(x, self.conv_groups)
 
@@ -453,6 +441,4 @@ class Upsampler(nn.Sequential):
             raise NotImplementedError
 
         super(Upsampler, self).__init__(*m)
-
-
 

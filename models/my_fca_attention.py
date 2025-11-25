@@ -1,20 +1,7 @@
 # -*- coding: utf-8 -*
-"""Feature/Channel attention modules integrated into the model pipeline.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    FcaBottleneck, FcaBasicBlock, MultiSpectralAttentionLayer, MultiSpectralDCTLayer
-
-Key functions:
-    conv3x3, get_freq_indices
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Feature/Channel attention mechanisms that recalibrate intermediate representations to improve discriminative capacity. Prominent classes include: FcaBottleneck, FcaBasicBlock, MultiSpectralAttentionLayer, MultiSpectralDCTLayer. Notable functions include: conv3x3, get_freq_indices."""
 # @Time : 2023/8/27 16:53
-# Author: Kunlin Yang
+# @Author : 杨坤林
 # @File : my_fca_attention.py
 # @Software : PyCharm
 
@@ -52,6 +39,7 @@ class FcaBottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
 
+    # Purpose: Reweight feature channels via learned attention to enhance informative responses.
     def forward(self, x):
         residual = x
 
@@ -247,4 +235,3 @@ class MultiSpectralDCTLayer(nn.Module):
                         t_y, v_y, tile_size_y)
 
         return dct_filter
-

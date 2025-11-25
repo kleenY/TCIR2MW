@@ -1,31 +1,19 @@
 # -*- coding: utf-8 -*
-"""Custom phase-based loss function for training and evaluation.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    PhaseLoss
-
-Key functions:
-    None
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Phase‑aware loss defined in the frequency domain to penalize phase inconsistency between predictions and targets. Prominent classes include: PhaseLoss."""
 # @Time : 2023/9/4 10:45
-# Author: Kunlin Yang
+# @Author : 杨坤林
 # @File : PhaseLoss.py
 # @Software : PyCharm
 import torch
 import torch.nn as nn
 
 
-# phase loss
+# 定义相位损失函数
 class PhaseLoss(nn.Module):
     def __init__(self):
         super(PhaseLoss, self).__init__()
 
+    # Purpose: Compute the phase‑aware discrepancy in the frequency domain and return the scalar loss.
     def forward(self, predicted, target):
         # Compute the Fourier transform
         predicted_fft = torch.fft.fft2(predicted, dim=(-2, -1))
@@ -45,16 +33,16 @@ class PhaseLoss(nn.Module):
         return phase_loss
 
 
-# Comment translated to English (manual check recommended)
+# # 示例用法
 # if __name__ == '__main__':
-# Comment translated to English (manual check recommended)
-# Comment translated to English (manual check recommended)
-# Comment translated to English (manual check recommended)
+#     # 创建两个示例特征图（大小相同）
+#     predicted_feature_map = torch.randn(1, 1, 64, 64)  # 示例的预测特征图
+#     target_feature_map = torch.randn(1, 1, 64, 64)  # 示例的目标特征图
 #
-# # phase loss
+#     # 初始化相位损失函数
 #     phase_loss_fn = PhaseLoss()
 #
-# # phase loss
+#     # 计算相位损失
 #     loss = phase_loss_fn(predicted_feature_map, target_feature_map)
 #
-# print("phase loss:", loss.item())
+#     print("相位损失:", loss.item())

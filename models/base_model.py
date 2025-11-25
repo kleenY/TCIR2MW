@@ -1,17 +1,4 @@
-"""Base model abstraction and training/inference scaffolding shared by different models.
-
-This module is part of the TCIR2MW project.
-Auto-generated overview (2025-11-25).
-
-Key classes:
-    BaseModel
-
-Key functions:
-    None
-
-Notes:
-    This module-level docstring was auto-generated. Please refine or expand as needed.
-"""
+"""Base training and inference scaffold. Standardizes data I/O, network construction, optimization steps, checkpointing, and learning‑rate scheduling. Prominent classes include: BaseModel."""
 import os
 import torch
 
@@ -30,6 +17,7 @@ class BaseModel():
     def set_input(self, input):
         self.input = input
 
+    # Purpose: Compute the forward pass of the component and return the output tensor.
     def forward(self):
         pass
 
