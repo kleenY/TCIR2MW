@@ -1,36 +1,19 @@
+"""History buffer (image pool) used during adversarial training to stabilize updates by reusing past samples. Prominent classes: ImagePool."""
+
 import random
 import torch
 from torch.autograd import Variable
 
+
 class ImagePool():
-    """Class ImagePool.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self, pool_size):
-        """Initialize the instance.
-
-        Args:
-            pool_size (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         self.pool_size = pool_size
         if self.pool_size > 0:
             self.num_imgs = 0
             self.images = []
 
+    # Purpose: Mix current outputs with buffered historical samples to stabilize adversarial training.
     def query(self, images):
-        """Perform the query operation.
-
-        Args:
-            images (Any): Description.
-
-        Returns:
-            Any: Result.
-        """
         if self.pool_size == 0:
             return Variable(images)
         return_images = []
