@@ -1,35 +1,17 @@
+"""Command‑line interface for experiments: argument definitions, parsing logic, and experiment directory handling. Prominent classes: BaseOptions."""
+
 import argparse
 import os
 from util import util
 import torch
 
+
 class BaseOptions():
-    """Class BaseOptions.
-
-    Notes:
-        Auto-generated documentation. Please refine as needed.
-    """
     def __init__(self):
-        """Initialize the instance.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         self.parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         self.initialized = False
 
     def initialize(self):
-        """Initialize model networks and optimizers.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         self.parser.add_argument('--dataroot', default='', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
         self.parser.add_argument('--loadSize', type=int, default=300, help='scale images to this size')
@@ -73,15 +55,8 @@ class BaseOptions():
 
         self.initialized = True
 
+    # Purpose: Parse command‑line arguments and materialize a structured options object for the experiment.
     def parse(self):
-        """Perform the parse operation.
-
-        Args:
-            None
-
-        Returns:
-            Any: Result.
-        """
         if not self.initialized:
             self.initialize()
         self.opt = self.parser.parse_args()
