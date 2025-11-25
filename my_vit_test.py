@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*
-# Author: Kunlin Yang
+# @Author : Kunlin Yang
 # @File : my_test.py
 # @Software : PyCharm
+"""Evaluation runner for ViT‑based models: argument handling, experiment logging, checkpoint loading, and dataset iteration. Representative functions: build_summary_dict, create_exp_dir, set_lr, test2, my_normal."""
+
 from __future__ import print_function
 import argparse
 import os
@@ -30,17 +32,6 @@ parser.add_argument('--my_save_path', type=str,
 
 # Create dictionary
 def build_summary_dict(total_losses, psnr, phase, summary_losses=None):
-    """Perform the build_summary_dict operation.
-
-    Args:
-        total_losses (Any): Description.
-        psnr (Any): Description.
-        phase (Any): Description.
-        summary_losses (Any): Description.
-
-    Returns:
-        Any: Result.
-    """
 
     if summary_losses is None:
         summary_losses = {}
@@ -52,29 +43,11 @@ def build_summary_dict(total_losses, psnr, phase, summary_losses=None):
 
 # Create save directory
 def create_exp_dir(exp):
-    """Create an experiment directory and copy scripts.
-
-    Args:
-        exp (Tensor): Description.
-
-    Returns:
-        Any: Result.
-    """
-    if not os.path.isdir(exp):  # Create it if it does not exist
+    if not os.path.isdir(exp):  # Create if not exists
         os.makedirs(exp)
 
 # Set up optimizer
 def set_lr(args, epoch, optimizer):
-    """Set the learning rate for all parameter groups.
-
-    Args:
-        args (Any): Description.
-        epoch (int): Description.
-        optimizer (Any): Description.
-
-    Returns:
-        Any: Result.
-    """
     lrDecay = args.lrDecay
     decayType = args.decayType
     if decayType == 'step':
@@ -90,23 +63,20 @@ def set_lr(args, epoch, optimizer):
         param_group['lr'] = lr
     return lr
 
-# Comment translated to English (manual check recommended)
+
+
+# 
+# Purpose: Iterate over the evaluation set, run inference, and collect outputs/metrics.
 def test2():
-    """Run testing on the dataset.
-
-    Args:
-        None
-
-    Returns:
-        Any: Result.
-    """
     args = parser.parse_args()
 
     opt = TestOptions().parse()
 
+
+
     create_exp_dir(args.my_train_logs_path)
     create_exp_dir(args.my_save_path)
-    # Comment translated to English (manual check recommended)
+    # 
     manualSeed = 101
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
@@ -114,11 +84,13 @@ def test2():
 
     device = torch.device("cuda:0" if args.cuda else "cpu")
 
-    # Comment translated to English (manual check recommended)
+    # 
     model = create_model(opt)
 
-    df = pd.DataFrame(columns=['data_name', 'test Loss', 'test psnr'])  # Comment translated to English (manual check recommended)
-    df.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), index=False)  # Comment translated to English (manual check recommended)
+
+    df = pd.DataFrame(columns=['data_name', 'test Loss', 'test psnr'])  # 
+    df.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), index=False)  # 
+
 
     image_dir = args.dataset
 
@@ -144,6 +116,7 @@ def test2():
         normal_target = target / 350
         target = torch.from_numpy(np.expand_dims(np.expand_dims(normal_target, 0), 0))
         target = target.to(device)
+
 
         model.set_input(input, target)
         with torch.no_grad():
@@ -182,28 +155,27 @@ def test2():
 
         list = [data_name, psnr1, rmse1, ssim1, mae1]
 
+
         data = pd.DataFrame([list])
 
         data.to_csv(os.path.join(args.my_train_logs_path, "test_summary.csv"), mode='a', header=False,
-                    index=False)  # Comment translated to English (manual check recommended)
+                    index=False)  # modea,csv
 
     avg_psnr = np.mean(psnr)
 
     print(avg_psnr)
 
+
 def my_normal(x):
-    """Normalize tensor(s) to a given range.
-
-    Args:
-        x (Tensor): Description.
-
-    Returns:
-        Any: Result.
-    """
     smax = np.max(x)
     smin = np.min(x)
     s = (x - smin)/(smax - smin)
     return s
+
+
+
+
+
 
 if __name__ == '__main__':
     print("start!")
